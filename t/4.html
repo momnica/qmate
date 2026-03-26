@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QMate — Maglietta #4</title>
+  <link rel="stylesheet" href="../assets/css/qmate.css">
+</head>
+<body>
+<div class="page">
+   <div class="header">
+  <img src="../assets/img/qmate-logo.png" width="280px" style="margin: 0 auto 30px auto;"/>
+  </div>
+  <div class="badge-row">
+    <span class="badge badge-num">Maglietta #4 / 5</span>
+    <span class="badge badge-type">indovinello</span>
+  </div>
+  <div class="progress-row">
+    <div class="prog-dot pd-inactive" id="pd1"></div>
+    <div class="prog-dot pd-inactive" id="pd2"></div>
+    <div class="prog-dot pd-inactive" id="pd3"></div>
+    <div class="prog-dot pd-active" id="pd4"></div>
+    <div class="prog-dot pd-inactive" id="pd5"></div>
+    <span class="prog-lbl" id="prog-lbl">trovata 1 di 5</span>
+  </div>
+
+  <div class="screen active" id="screen-quiz">
+    <div class="card-title">Rispondi per sbloccare il frammento</div>
+    <p style="font-size:17px; font-weight:600; margin-bottom:1.25rem; line-height:1.5;">
+      Un gallo depone un uovo sul tetto. Da che parte cade?
+    </p>
+    <div class="options">
+      <div class="option" id="opt-a" onclick="select('a')"><div class="option-letter">A</div><div class="option-text">A sinistra</div></div>
+      <div class="option" id="opt-b" onclick="select('b')"><div class="option-letter">B</div><div class="option-text">A destra</div></div>
+      <div class="option" id="opt-c" onclick="select('c')"><div class="option-letter">C</div><div class="option-text">I galli non depongono uova!</div></div>
+      <div class="option" id="opt-d" onclick="select('d')"><div class="option-letter">D</div><div class="option-text">In avanti</div></div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn" id="confirm-btn" disabled onclick="confirm()">Conferma risposta</button>
+  </div>
+
+  <div class="screen" id="screen-reward">
+    <div class="card" style="border-color: var(--purple);">
+      <div class="reward-top">
+        <div class="reward-icon">✓</div>
+        <div><div class="reward-title">Risposta corretta!</div><div class="reward-sub">Hai sbloccato il frammento #4</div></div>
+      </div>
+      <div class="secret-box">
+        <div><div class="secret-label">Codice segreto</div><div class="secret-value">BNTZ</div></div>
+        <button class="copy-btn" onclick="copyToClipboard('BNTZ', this)">copia</button>
+      </div>
+      <div class="card-title">Frammento #4 — JSON</div>
+      <div class="code-block" style="font-size:12px;"><span class="lang-badge">JSON</span>{
+  <span class="kw">"config"</span>: {
+    <span class="kw">"title"</span>: <span class="str">"__TITLE_01__"</span>,
+    <span class="kw">"theme"</span>: <span class="str">"__THEME_05__"</span>,
+    <span class="kw">"data"</span>: [<span class="str">"???"</span>]
+  }
+}</div>
+      <div style="font-size:13px; color:var(--text2); line-height:1.6;">Quasi! Una sola maglietta ancora. Trovala!</div>
+    </div>
+    <a href="../unlock/index.html" class="btn" style="display:block; text-align:center; text-decoration:none; padding:14px;">Vai a /unlock →</a>
+    <button class="btn-ghost" onclick="reset()">Riprova (demo)</button>
+  </div>
+</div>
+<script src="../assets/js/qmate.js"></script>
+<script>
+  let chosen = null; const correct = 'c';
+  window.onload = () => updateDots(Math.max(4, countSavedCodes()));
+  function select(opt) {
+    chosen = opt;
+    ['a','b','c','d'].forEach(o => document.getElementById('opt-'+o).className = 'option');
+    document.getElementById('opt-'+opt).classList.add('selected');
+    document.getElementById('confirm-btn').disabled = false;
+    document.getElementById('feedback').textContent = '';
+  }
+  function confirm() {
+    if (!chosen) return;
+    document.querySelectorAll('.option').forEach(o => o.onclick = null);
+    if (chosen === correct) {
+      document.getElementById('opt-'+chosen).className = 'option correct';
+      document.getElementById('feedback').textContent = 'Esatto! I galli non depongono uova. Ci sei cascato/a? 😄';
+      document.getElementById('feedback').className = 'feedback ok';
+      document.getElementById('confirm-btn').disabled = true;
+      saveCode(4, 'BNTZ');
+      setTimeout(() => { document.getElementById('screen-quiz').classList.remove('active'); document.getElementById('screen-reward').classList.add('active'); }, 900);
+    } else {
+      document.getElementById('opt-'+chosen).className = 'option wrong';
+      document.getElementById('feedback').textContent = 'Rileggi bene la domanda... 😏';
+      document.getElementById('feedback').className = 'feedback ko';
+      setTimeout(() => {
+        document.getElementById('opt-'+chosen).className = 'option';
+        document.querySelectorAll('.option').forEach((o,i) => o.onclick = () => select(['a','b','c','d'][i]));
+        chosen = null; document.getElementById('confirm-btn').disabled = true;
+        document.getElementById('feedback').textContent = '';
+      }, 1200);
+    }
+  }
+  function reset() {
+    chosen = null;
+    ['a','b','c','d'].forEach(o => { document.getElementById('opt-'+o).className = 'option'; document.getElementById('opt-'+o).onclick = () => select(o); });
+    document.getElementById('confirm-btn').disabled = true;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('screen-reward').classList.remove('active');
+    document.getElementById('screen-quiz').classList.add('active');
+  }
+</script>
+</body>
+</html>

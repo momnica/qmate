@@ -1,0 +1,14 @@
+{
+  "sets": {
+    "nerd_01": {
+      "name": "Set Nerd #1",
+      "shirts": [
+        { "id": 1, "code": "QMXT", "type": "HTML",       "fragment": "fragment_01.html" },
+        { "id": 2, "code": "RMCS", "type": "CSS",        "fragment": "fragment_02.css"  },
+        { "id": 3, "code": "WKPL", "type": "JavaScript", "fragment": "fragment_03.js"   },
+        { "id": 4, "code": "BNTZ", "type": "Python",     "fragment": "fragment_04.py"   },
+        { "id": 5, "code": "XVQR", "type": "JSON",       "fragment": "fragment_05.json" }
+      ]
+    }
+  }
+}

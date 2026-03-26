@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QMate — Maglietta #2</title>
+  <link rel="stylesheet" href="../assets/css/qmate.css">
+</head>
+<body>
+<div class="page">
+    <div class="header">
+  <img src="../assets/img/qmate-logo.png" width="280px" style="margin: 0 auto 30px auto;"/>
+  </div>
+  <div class="badge-row">
+    <span class="badge badge-num">Maglietta #2 / 5</span>
+    <span class="badge badge-type">cultura nerd</span>
+  </div>
+  <div class="progress-row">
+    <div class="prog-dot pd-inactive" id="pd1"></div>
+    <div class="prog-dot pd-active" id="pd2"></div>
+    <div class="prog-dot pd-inactive" id="pd3"></div>
+    <div class="prog-dot pd-inactive" id="pd4"></div>
+    <div class="prog-dot pd-inactive" id="pd5"></div>
+    <span class="prog-lbl" id="prog-lbl">trovata 1 di 5</span>
+  </div>
+
+  <div class="screen active" id="screen-quiz">
+    <div class="card-title">Rispondi per sbloccare il frammento</div>
+    <p style="font-size:17px; font-weight:600; margin-bottom:1.25rem; line-height:1.5;">
+      Cosa fa la combinazione <kbd style="background:var(--bg3); border:0.5px solid var(--border); border-radius:4px; padding:2px 7px; font-family:monospace; font-size:15px;">Ctrl + Z</kbd> su un computer?
+    </p>
+    <div class="options">
+      <div class="option" id="opt-a" onclick="select('a')"><div class="option-letter">A</div><div class="option-text">Salva il file</div></div>
+      <div class="option" id="opt-b" onclick="select('b')"><div class="option-letter">B</div><div class="option-text">Annulla l'ultima azione</div></div>
+      <div class="option" id="opt-c" onclick="select('c')"><div class="option-letter">C</div><div class="option-text">Chiude il programma</div></div>
+      <div class="option" id="opt-d" onclick="select('d')"><div class="option-letter">D</div><div class="option-text">Copia il testo selezionato</div></div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn" id="confirm-btn" disabled onclick="confirm()">Conferma risposta</button>
+  </div>
+
+  <div class="screen" id="screen-reward">
+    <div class="card" style="border-color: var(--purple);">
+      <div class="reward-top">
+        <div class="reward-icon">✓</div>
+        <div><div class="reward-title">Risposta corretta!</div><div class="reward-sub">Hai sbloccato il frammento #2</div></div>
+      </div>
+      <div class="secret-box">
+        <div><div class="secret-label">Codice segreto</div><div class="secret-value">RMCS</div></div>
+        <button class="copy-btn" onclick="copyToClipboard('RMCS', this)">copia</button>
+      </div>
+      <div class="card-title">Frammento #2 — CSS</div>
+      <div class="code-block" style="font-size:12px;"><span class="lang-badge">CSS</span><span class="cm">/* fragment_02.css */</span>
+<span class="attr">:root</span> {
+  <span class="kw">--color</span>: <span class="str">"__COLOR_05__"</span>;
+  <span class="kw">--font</span>:  <span class="str">"__FONT_01__"</span>;
+}
+<span class="attr">#app</span> {
+  <span class="kw">display</span>: <span class="str">flex</span>;
+  <span class="kw">background</span>: <span class="str">var(--color)</span>;
+  <span class="cm">/* animazione: __ANIM_03__ */</span>
+}</div>
+      <div style="font-size:13px; color:var(--text2); line-height:1.6;">Ottimo! 2 frammenti su 5. Continua!</div>
+    </div>
+    <a href="../unlock/index.html" class="btn" style="display:block; text-align:center; text-decoration:none; padding:14px;">Vai a /unlock →</a>
+    <button class="btn-ghost" onclick="reset()">Riprova (demo)</button>
+  </div>
+</div>
+<script src="../assets/js/qmate.js"></script>
+<script>
+  let chosen = null; const correct = 'b';
+  window.onload = () => updateDots(Math.max(2, countSavedCodes()));
+  function select(opt) {
+    chosen = opt;
+    ['a','b','c','d'].forEach(o => document.getElementById('opt-'+o).className = 'option');
+    document.getElementById('opt-'+opt).classList.add('selected');
+    document.getElementById('confirm-btn').disabled = false;
+    document.getElementById('feedback').textContent = '';
+  }
+  function confirm() {
+    if (!chosen) return;
+    document.querySelectorAll('.option').forEach(o => o.onclick = null);
+    if (chosen === correct) {
+      document.getElementById('opt-'+chosen).className = 'option correct';
+      document.getElementById('feedback').textContent = 'Esatto! Ctrl+Z annulla l\'ultima azione. Il tuo migliore amico quando sbagli!';
+      document.getElementById('feedback').className = 'feedback ok';
+      document.getElementById('confirm-btn').disabled = true;
+      saveCode(2, 'RMCS');
+      setTimeout(() => { document.getElementById('screen-quiz').classList.remove('active'); document.getElementById('screen-reward').classList.add('active'); }, 900);
+    } else {
+      document.getElementById('opt-'+chosen).className = 'option wrong';
+      document.getElementById('feedback').textContent = 'Non è corretto, riprova!';
+      document.getElementById('feedback').className = 'feedback ko';
+      setTimeout(() => {
+        document.getElementById('opt-'+chosen).className = 'option';
+        document.querySelectorAll('.option').forEach((o,i) => o.onclick = () => select(['a','b','c','d'][i]));
+        chosen = null; document.getElementById('confirm-btn').disabled = true;
+        document.getElementById('feedback').textContent = '';
+      }, 1200);
+    }
+  }
+  function reset() {
+    chosen = null;
+    ['a','b','c','d'].forEach(o => { document.getElementById('opt-'+o).className = 'option'; document.getElementById('opt-'+o).onclick = () => select(o); });
+    document.getElementById('confirm-btn').disabled = true;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('screen-reward').classList.remove('active');
+    document.getElementById('screen-quiz').classList.add('active');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QMate — Sblocca il segreto</title>
+  <link rel="stylesheet" href="../assets/css/qmate.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="logo-q">Q</div>
+    <div class="logo-text">Mate</div>
+  </div>
+
+  <h1 style="font-size:20px; font-weight:600; margin-bottom:6px;">Sblocca il segreto</h1>
+  <p style="font-size:14px; color:var(--text2); margin-bottom:2rem; line-height:1.5;">
+    Inserisci i 5 codici segreti delle magliette che hai trovato. L'ordine non conta.
+  </p>
+
+  <div id="slots">
+    <div class="slot" id="slot-1">
+      <div class="slot-num">1</div>
+      <input class="slot-input" maxlength="4" placeholder="codice maglietta #1" oninput="handleInput(this,1)" />
+      <div class="slot-check">✓</div>
+    </div>
+    <div class="slot" id="slot-2">
+      <div class="slot-num">2</div>
+      <input class="slot-input" maxlength="4" placeholder="codice maglietta #2" oninput="handleInput(this,2)" />
+      <div class="slot-check">✓</div>
+    </div>
+    <div class="slot" id="slot-3">
+      <div class="slot-num">3</div>
+      <input class="slot-input" maxlength="4" placeholder="codice maglietta #3" oninput="handleInput(this,3)" />
+      <div class="slot-check">✓</div>
+    </div>
+    <div class="slot" id="slot-4">
+      <div class="slot-num">4</div>
+      <input class="slot-input" maxlength="4" placeholder="codice maglietta #4" oninput="handleInput(this,4)" />
+      <div class="slot-check">✓</div>
+    </div>
+    <div class="slot" id="slot-5">
+      <div class="slot-num">5</div>
+      <input class="slot-input" maxlength="4" placeholder="codice maglietta #5" oninput="handleInput(this,5)" />
+      <div class="slot-check">✓</div>
+    </div>
+  </div>
+
+  <div class="prog-bar-row" style="margin-top:1rem;">
+    <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="prog-bar-lbl" id="prog-label">0 / 5</div>
+  </div>
+
+  <button class="btn" id="unlock-btn" disabled onclick="tryUnlock()">Sblocca</button>
+  <div class="feedback" id="error-msg" style="text-align:center;"></div>
+
+  <div style="font-size:11px; color:var(--text3); text-align:center; margin-top:1rem; line-height:1.7;">
+    Demo: clicca qui per riempire automaticamente →
+    <span onclick="fillDemo()" style="color:var(--purple); cursor:pointer; text-decoration:underline;">
+      QMXT · RMCS · WKPL · BNTZ · XVQR
+    </span>
+  </div>
+
+</div>
+
+<script src="../assets/js/qmate.js"></script>
+<script>
+  const VALID = ['QMXT','RMCS','WKPL','BNTZ','XVQR'];
+  const filled = {};
+
+  // Pre-carica i codici salvati nel localStorage
+  window.onload = () => {
+    const saved = getSavedCodes();
+    Object.entries(saved).forEach(([slot, code]) => {
+      const n = parseInt(slot);
+      const inputs = document.querySelectorAll('.slot-input');
+      if (inputs[n-1]) {
+        inputs[n-1].value = code;
+        handleInput(inputs[n-1], n);
+      }
+    });
+  };
+
+  function handleInput(el, n) {
+    const val = el.value.toUpperCase().replace(/[^A-Z]/g,'');
+    el.value = val;
+    const slot = document.getElementById('slot-'+n);
+    slot.classList.remove('filled','error');
+    if (val.length === 4) {
+      slot.classList.add('filled');
+      filled[n] = val;
+    } else {
+      delete filled[n];
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = Object.keys(filled).length;
+    document.getElementById('prog-fill').style.width = (count/5*100)+'%';
+    document.getElementById('prog-label').textContent = count+' / 5';
+    document.getElementById('unlock-btn').disabled = count < 5;
+    document.getElementById('error-msg').textContent = '';
+    document.getElementById('error-msg').className = 'feedback';
+  }
+
+  function tryUnlock() {
+    const vals = Object.values(filled);
+    const allValid = VALID.every(v => vals.includes(v));
+
+    if (allValid) {
+      // Tutti i codici corretti → vai alla pagina segreta
+      window.location.href = '../secret/index.html';
+    } else {
+      // Evidenzia quelli sbagliati
+      Object.keys(filled).forEach(n => {
+        if (!VALID.includes(filled[n])) {
+          document.getElementById('slot-'+n).classList.add('error');
+        }
+      });
+      document.getElementById('error-msg').textContent = 'Uno o più codici non sono corretti.';
+      document.getElementById('error-msg').className = 'feedback ko';
+    }
+  }
+
+  function fillDemo() {
+    const inputs = document.querySelectorAll('.slot-input');
+    VALID.forEach((v,i) => {
+      inputs[i].value = v;
+      handleInput(inputs[i], i+1);
+    });
+  }
+</script>
+</body>
+</html>
